@@ -89,7 +89,7 @@ input[type="file"] {
 	display: flex;
 	align-items: center;
 	white-space: nowrap;
-	overflow: scroll;
+	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
