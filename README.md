@@ -96,8 +96,8 @@ Once you've chosen the file you want to upload, click on the `Upload File` butto
 
 To download a file, go to the left side of the website, where you should see the list of uploaded files, and click on the `Download File` button, then it will process the chunks by downloading them, and reassembling them
 
-- **Warning**: Again once you've clicked on the `Download File` button, don't refresh the page, for the same reasons stated in the [`To upload a file`](https://github.com/Imo-Br/discord-cloud-storage/#to-upload-a-file) section
+- **Warning**: Again once you've clicked on the `Download File` button, don't refresh the page, for the same reasons stated in the [`To upload a file`](#to-upload-a-file) section
 
 ### To delete a file
 
-And finally, to delete a file, go to the same place you went to in the [`To download a file`](https://github.com/Imo-Br/discord-cloud-storage/#to-download-a-file) section, and this time click on the `Delete File` button, then it will delete the file from database, hence deleting it from the file list
+And finally, to delete a file, go to the same place you went to in the [`To download a file`](#to-download-a-file) section, and this time click on the `Delete File` button, then it will delete the file from database, hence deleting it from the file list
