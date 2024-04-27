@@ -69,7 +69,7 @@ function File(props) {
 	};
 	return (
 		<tr>
-			<td className="fileName">{`${props.fileName}`} </td>
+			<td className="fileName">{`${props.fileName}`}</td>
 			<td className="buttonContainer">
 				<button
 					className="downloadBtn"

@@ -83,20 +83,6 @@ input[type="file"] {
 	background-color: #f9f9f9;
 }
 
-/* Styles for the file names */
-.fileName {
-	/* Corrected typo */
-	display: flex;
-	align-items: center;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.fileName span {
-	margin-right: 10px;
-}
-
 /* Styles for the buttons */
 .buttonContainer {
 	/* Corrected typo */
