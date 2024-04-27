@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function FileUploadButton() {
+function FileUploadButton(props) {
 	const [selectedFile, setSelectedFile] = useState(null);
 
 	const handleFileChange = (event) => {
@@ -24,7 +24,16 @@ function FileUploadButton() {
 			}
 
 			console.log("File uploaded successfully!");
-			// Handle successful upload (e.g., display message)
+
+			// Fetch the file list again after upload
+			const fileListResponse = await fetch(`http://localhost:8080/files`);
+			if (!fileListResponse.ok) {
+				throw new Error("Failed to fetch file list after upload");
+			}
+
+			const fileListData = await fileListResponse.json();
+			// Update the file list in the parent component
+			props.setFileInfo(fileListData.result);
 		} catch (error) {
 			console.error("Error uploading file:", error);
 			// Handle upload error (e.g., display error message)

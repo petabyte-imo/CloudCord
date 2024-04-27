@@ -23,6 +23,7 @@ async fn main() -> core::result::Result<(), AsyncError> {
         .merge(crate::web::upload::routes())
         .merge(crate::web::download::routes())
         .merge(crate::web::file_helper::routes())
+        .merge(crate::web::delete::routes())
         .layer(cors)
         .layer(DefaultBodyLimit::max(1024 * 1024 * 1024));
     let tcp_listener = TcpListener::bind("127.0.0.1:8080").await?;

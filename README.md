@@ -78,7 +78,26 @@ $ npm run build
 $ npm i -g react-scripts
 ```
 
-### To use it
+## To use it
 
-Navigate to http://127.0.0.1:3000  
-And voila you can now use it to upload and download the files you've uploaded
+Make sure you've set it up alright and have the backend and frontend running  
+Then Navigate to http://127.0.0.1:3000
+
+### To upload a file
+
+To upload a file, go to the right side of the screen, and click on the `Choose File` button  
+Once you've chosen the file you want to upload, click on the `Upload File` button
+
+- **Warning**: Once you've clicked on the `Upload File` button, don't refresh the page, as it will interrupt the uploading process and might cause the files to be left in your uploads/chunks, which won't be good for our storage  
+  You'll know that the uploading process, when you'd either, see in the console for the backend `Successfully sent files`  
+  Or when you'd see the file you just uploaded, in the right side of the website where, the list of the uploaded files is at
+
+### To download a file
+
+To download a file, go to the left side of the website, where you should see the list of uploaded files, and click on the `Download File` button, then it will process the chunks by downloading them, and reassembling them
+
+- **Warning**: Again once you've clicked on the `Download File` button, don't refresh the page, for the same reasons stated in the [`To upload a file`](https://github.com/Imo-Br/discord-cloud-storage/#to-upload-a-file) section
+
+### To delete a file
+
+And finally, to delete a file, go to the same place you went to in the [`To download a file`](https://github.com/Imo-Br/discord-cloud-storage/#to-download-a-file) section, and this time click on the `Delete File` button, then it will delete the file from database, hence deleting it from the file list

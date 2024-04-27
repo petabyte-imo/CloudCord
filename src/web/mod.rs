@@ -1,4 +1,5 @@
 pub mod db;
+pub mod delete;
 pub mod download;
 pub mod file_helper;
 pub mod filefunctions;

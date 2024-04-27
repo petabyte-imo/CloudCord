@@ -88,7 +88,7 @@ impl UploadDatabase {
             });
 
             println!(
-                "Retrieving File name: {} And File Size:{}\n\n",
+                "Retrieving File with url: {} And File Size:{}",
                 url, filename
             );
         }
@@ -120,6 +120,18 @@ impl UploadDatabase {
         transaction.commit().await?;
         let exists = row.get::<bool, &str>("exists");
         Ok(exists)
+    }
+    pub async fn delete_from_filename(&self, file_name: &str) -> Result<(), sqlx::Error> {
+        self.create_urls_table().await?;
+        let mut transaction = self.pool.begin().await?;
+        let q = "DELETE FROM urls WHERE file_name = $1";
+        sqlx::query(q)
+            .bind(file_name)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
+        transaction.commit().await.unwrap();
+        Ok(())
     }
 }
 #[derive(Clone)]
