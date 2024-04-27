@@ -50,7 +50,7 @@ function File(props) {
 					downloadClick();
 				}}
 			>
-				{isDownloading ? "Downloading..." : "Download File"}
+				{isDownloading ? "Processing..." : "Download File"}
 			</button>
 		</div>
 	);

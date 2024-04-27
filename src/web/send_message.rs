@@ -51,8 +51,12 @@ pub async fn send_message(
 
         println!("Uploading to discord");
         let res = match client
-            .post("https://discord.com/api/v9/channels/1230975819849924771/attachments")
+            .post(format!(
+                "https://discord.com/api/v9/channels/{}/attachments",
+                get_secret("CHANNEL_ID")
+            ))
             .json(&json!({
+
                 "files": [{
                     "filename": chunk_filename,
                     "file_size": bytes.len()
@@ -74,6 +78,7 @@ pub async fn send_message(
             Ok(res_json) => res_json,
             Err(_) => return Err(uh_oh()),
         };
+
         let attachments = res_json["attachments"].as_array().unwrap();
         let upload_url = match attachments[0]["upload_url"].as_str() {
             Some(upload_url) => upload_url,
@@ -89,7 +94,10 @@ pub async fn send_message(
         };
 
         let res = match client
-            .post("https://discord.com/api/v9/channels/1230975819849924771/messages")
+            .post(format!(
+                "https://discord.com/api/v9/channels/{}/messages",
+                get_secret("CHANNEL_ID")
+            ))
             .json(&json!({
                 "content": "",
                 "attachments" :[{
