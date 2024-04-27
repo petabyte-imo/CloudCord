@@ -8,6 +8,8 @@ use axum::{
     routing::get,
 };
 
+use super::file_helper::get_file_from_db;
+
 #[derive(Debug, serde::Deserialize)]
 pub struct DownloadOptions {
     pub filename: Option<String>,
@@ -20,7 +22,13 @@ pub async fn download(
     query: Query<DownloadOptions>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let file_path = PathBuf::from(file_path.clone()); // Convert to PathBuf
-
+    let result = match get_file_from_db(file_path.to_str().unwrap()).await {
+        Ok(result) => result,
+        Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
+    };
+    if result == "5321" {
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    }
     let file_content = fs::read(file_path.clone())
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
         .unwrap();
@@ -51,6 +59,7 @@ pub async fn download(
     let nhmm_body = Body::into_data_stream(file_content.into());
     let new_body = Body::from_stream(nhmm_body);
     let response = (headers, new_body);
+    std::fs::remove_file(filename).unwrap();
 
-    Ok::<(HeaderMap, Body), ()>(response)
+    Ok(Ok::<(HeaderMap, Body), ()>(response))
 }

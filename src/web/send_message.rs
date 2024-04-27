@@ -1,4 +1,4 @@
-use crate::{errors::uh_oh, web::db::upload::UploadDatabase};
+use crate::{errors::uh_oh, secrets::get_secret, web::db::upload::UploadDatabase};
 use std::{env::current_dir, fs::File, io::Read};
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
@@ -49,16 +49,6 @@ pub async fn send_message(
             Err(_) => return Err(uh_oh()),
         }
 
-        match upload_db
-            .add_file(&chunk_filename, bytes.len().to_string().as_str())
-            .await
-        {
-            Ok(_) => (),
-            Err(e) => {
-                println!("Error adding file to database: {}", e);
-                return Err(uh_oh());
-            }
-        };
         println!("Uploading to discord");
         let res = match client
             .post("https://discord.com/api/v9/channels/1230975819849924771/attachments")
@@ -69,15 +59,15 @@ pub async fn send_message(
                 }
                     ]
             }))
-            .header(
-                "Authorization",
-                "Bot MTIzMDk3OTkwMTg1MTY5NzMyMw.G-blfh.wjhtG3JOiEINngJzw1-LfmlrSOZ9bBhfBT5ars",
-            )
+            .header("Authorization", format!("Bot {}", get_secret("BOT_TOKEN")))
             .send()
             .await
         {
             Ok(res) => res,
-            Err(_) => return Err(uh_oh()),
+            Err(e) => {
+                println!("Error: {}", e);
+                return Err(uh_oh());
+            }
         };
 
         let res_json = match res.json::<Value>().await {
@@ -109,15 +99,15 @@ pub async fn send_message(
                 }],
                 "channel_id": "1230975819849924771"
             }))
-            .header(
-                "Authorization",
-                "Bot MTIzMDk3OTkwMTg1MTY5NzMyMw.G-blfh.wjhtG3JOiEINngJzw1-LfmlrSOZ9bBhfBT5ars",
-            )
+            .header("Authorization", format!("Bot {}", get_secret("BOT_TOKEN")))
             .send()
             .await
         {
             Ok(res) => res,
-            Err(_) => return Err(uh_oh()),
+            Err(e) => {
+                println!("Error: {}", e);
+                return Err(uh_oh());
+            }
         };
         let res_json = match res.json::<Value>().await {
             Ok(res_json) => res_json,
@@ -128,16 +118,18 @@ pub async fn send_message(
             Some(upload_url) => upload_url,
             None => return Err(uh_oh()),
         };
-        let filename = match attachments[0]["filename"].as_str() {
-            Some(upload_filename) => upload_filename,
-            None => return Err(uh_oh()),
-        };
+
         let size = match attachments[0]["size"].as_i64() {
             Some(upload_filename) => upload_filename,
             None => return Err(uh_oh()),
         };
         match upload_db
-            .add_url(url, filename, &chunk_filename, size.to_string().as_str())
+            .add_url(
+                url,
+                &payload.file_name,
+                &chunk_filename,
+                size.to_string().as_str(),
+            )
             .await
         {
             Ok(_) => (),
@@ -152,7 +144,8 @@ pub async fn send_message(
         ))
         .unwrap();
     }
-    Ok("RAAWR".to_string())
+    std::fs::remove_file(format!("./uploads/{}", &payload.file_name)).unwrap();
+    Ok("Successfully sent files".to_string())
 }
 
 #[derive(Debug, Deserialize)]

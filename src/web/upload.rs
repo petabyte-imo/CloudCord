@@ -23,9 +23,9 @@ use super::send_message::MessagePayload;
 
 // Define a struct to store uploaded file information
 #[derive(Debug, Clone)]
-struct UploadedFile {
-    filename: String,
-    content_type: Option<String>,
+pub struct UploadedFile {
+    pub filename: String,
+    pub content_type: Option<String>,
 }
 
 pub fn routes() -> axum::Router {
@@ -92,7 +92,7 @@ async fn upload(mut multipart: Multipart) -> Result<impl IntoResponse, impl Into
         // region:  ---SendMessage
         match send_message(payload).await {
             Ok(o) => {
-                println!("upload.rs {o}");
+                println!("{o}");
                 o
             }
             Err(_) => {

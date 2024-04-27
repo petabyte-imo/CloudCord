@@ -8,6 +8,7 @@ use tower_http::cors::{Any, CorsLayer};
 type AsyncError = Box<dyn std::error::Error + Send + Sync>;
 
 mod errors;
+mod secrets;
 mod web;
 #[tokio::main]
 async fn main() -> core::result::Result<(), AsyncError> {
@@ -21,6 +22,7 @@ async fn main() -> core::result::Result<(), AsyncError> {
     let all_routes = Router::new()
         .merge(crate::web::upload::routes())
         .merge(crate::web::download::routes())
+        .merge(crate::web::file_helper::routes())
         .layer(cors)
         .layer(DefaultBodyLimit::max(1024 * 1024 * 1024));
     let tcp_listener = TcpListener::bind("127.0.0.1:8080").await?;
