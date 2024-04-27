@@ -68,27 +68,31 @@ function File(props) {
 			});
 	};
 	return (
-		<div>
-			{`${props.fileName}`}{" "}
-			<button
-				disabled={isDownloading}
-				onClick={() => {
-					setFilePath(props.fileName);
-					downloadClick();
-				}}
-			>
-				{isDownloading ? "Processing..." : "Download File"}
-			</button>
-			<button
-				disabled={isDeleting}
-				onClick={() => {
-					setFilePath(props.fileName);
-					deleteClick();
-				}}
-			>
-				{isDeleting ? "Processing..." : "Delete File"}
-			</button>
-		</div>
+		<tr>
+			<td className="fileName">{`${props.fileName}`} </td>
+			<td className="buttonContainer">
+				<button
+					className="downloadBtn"
+					disabled={isDownloading}
+					onClick={() => {
+						setFilePath(props.fileName);
+						downloadClick();
+					}}
+				>
+					{isDownloading ? "Processing..." : "Download File"}
+				</button>
+				<button
+					className="deleteBtn"
+					disabled={isDeleting}
+					onClick={() => {
+						setFilePath(props.fileName);
+						deleteClick();
+					}}
+				>
+					{isDeleting ? "Processing..." : "Delete File"}
+				</button>
+			</td>
+		</tr>
 	);
 }
 

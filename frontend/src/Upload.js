@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function FileUploadButton(props) {
+function FileUploadButton({ setFileInfo }) {
 	const [selectedFile, setSelectedFile] = useState(null);
 
 	const handleFileChange = (event) => {
@@ -33,7 +33,7 @@ function FileUploadButton(props) {
 
 			const fileListData = await fileListResponse.json();
 			// Update the file list in the parent component
-			props.setFileInfo(fileListData.result);
+			setFileInfo(fileListData.result);
 		} catch (error) {
 			console.error("Error uploading file:", error);
 			// Handle upload error (e.g., display error message)
@@ -41,10 +41,21 @@ function FileUploadButton(props) {
 			setSelectedFile(null); // Clear selected file after upload
 		}
 	};
+
 	return (
 		<div>
-			<input type="file" onChange={handleFileChange} />
-			<button onClick={handleUpload}>Upload File</button>
+			<input
+				type="file"
+				id="selectInput"
+				onChange={handleFileChange}
+				style={{ display: "none" }}
+			/>
+			<label htmlFor="selectInput" className="input-file-label">
+				Choose File
+			</label>
+			<button onClick={handleUpload} className="uploadButton">
+				Upload File
+			</button>
 		</div>
 	);
 }

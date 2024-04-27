@@ -2,12 +2,14 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import File from "./File";
 import Upload from "./Upload";
+
 function App() {
 	const [fileInfo, setFileInfo] = useState([]);
 
 	useEffect(() => {
 		fetchFileList();
 	}, []); // No dependency array, fetches once on mount
+
 	const fetchFileList = async () => {
 		try {
 			const response = await fetch(`http://localhost:8080/files`);
@@ -21,20 +23,35 @@ function App() {
 			// Handle fetch error (e.g., display error message)
 		}
 	};
+
 	return (
-		<div className="App">
-			<div>
-				{fileInfo.length > 0 ? (
-					fileInfo.map((file, key) => {
-						return <File fileName={file} setFileInfo={setFileInfo} />;
-					})
-				) : (
-					<p>No files uploaded</p>
-				)}
-			</div>
-			<div>
-				<Upload setFileInfo={setFileInfo} />
-			</div>
+		<div className="container">
+			<header className="header">
+				<h1>File Manager</h1>
+				<div>
+					<Upload setFileInfo={setFileInfo} />
+				</div>
+			</header>
+
+			<table className="table">
+				<thead>
+					<tr>
+						<th>Filename</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{fileInfo.length > 0 ? (
+						fileInfo.map((file, key) => (
+							<File fileName={file} setFileInfo={setFileInfo} />
+						))
+					) : (
+						<tr>
+							<td colSpan="2">No files uploaded</td>
+						</tr>
+					)}
+				</tbody>
+			</table>
 		</div>
 	);
 }

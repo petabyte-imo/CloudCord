@@ -1,14 +1,130 @@
-.App {
+/* Styles for the overall layout */
+body {
+	font-family: sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+/* Styles for the header */
+.header {
 	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 0;
+	border-bottom: 1px solid #ddd;
+}
+
+.header h1 {
+	font-size: 1.5em;
+	margin: 0;
+}
+
+.header .uploadButton {
+	/* Assuming upload button was present */
+	background-color: #008bdb;
+	color: #fff;
+	padding: 10px;
+	border: none;
+	border-radius: 5px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	cursor: pointer;
+}
+.header .uploadButton:hover {
+	background-color: #004fa3;
+}
+input[type="file"] {
+	display: none;
+}
+
+/* Style the custom button that appears next to the file input */
+.input-file-label {
+	background-color: #00a2ff;
+	color: #fff;
+	padding: 10px;
+	padding-top: 8px;
+	border: none;
+	border-radius: 5px;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	cursor: pointer;
+}
+
+/* Optional hover effect for the custom button */
+.input-file-label:hover {
+	background-color: #0056b3;
+}
+/* Styles for the file list table */
+.table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.table th,
+.table td {
+	padding: 10px;
+	border: 1px solid #ddd;
+	text-align: left;
+}
+
+.table th {
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
+
+.table tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+/* Styles for the file names */
+.fileName {
+	/* Corrected typo */
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	overflow: scroll;
+	text-overflow: ellipsis;
+}
+
+.fileName span {
+	margin-right: 10px;
+}
+
+/* Styles for the buttons */
+.buttonContainer {
+	/* Corrected typo */
+	display: flex;
 	justify-content: space-between;
 }
 
-.App div:first-child {
-	padding: 0.2rem;
+.deleteBtn {
+	background-color: #ec2222;
+	color: #fff;
+	padding: 12px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
-.App div:last-child {
-	padding: 0.2rem;
+.deleteBtn:hover {
+	background-color: #a00;
+}
+.downloadBtn {
+	background-color: #5fdb46;
+	color: #fff;
+	padding: 12px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.downloadBtn:hover {
+	background-color: #2e8c4a;
 }
