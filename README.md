@@ -12,7 +12,7 @@ First of all you need to download [rust](rust-lang.org/tools/install), [nodejs](
 ### Make the postgresql database
 
 ```sql
-postgres=# CREATE DATABASE databasename;
+CREATE DATABASE databasename;
 ```
 
 ### Make the needed directories
