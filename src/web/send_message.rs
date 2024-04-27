@@ -34,6 +34,23 @@ pub async fn send_message(
     let client = Client::new();
 
     for chunk_filename in chunk_filenames {
+        let exists = match upload_db
+            .chunk_filename_exist(chunk_filename.as_str())
+            .await
+        {
+            Ok(exists) => exists,
+            Err(_) => return Err(uh_oh()),
+        };
+        if exists {
+            println!("Chunk file {} already exists", chunk_filename);
+            std::fs::remove_file(format!(
+                "{}/uploads/chunks/{}",
+                current_dir().unwrap().display(),
+                chunk_filename
+            ))
+            .unwrap();
+            continue;
+        }
         let mut file = match File::open(format!(
             "{}/uploads/chunks/{}",
             current_dir().unwrap().display(),

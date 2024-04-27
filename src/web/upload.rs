@@ -12,7 +12,8 @@ use axum::{
 
 use serde_json::json;
 use std::{
-    fs::OpenOptions,
+    env::current_dir,
+    fs::{create_dir, create_dir_all, OpenOptions},
     io::{BufWriter, Read, Write},
     path::PathBuf,
 };
@@ -35,6 +36,11 @@ pub fn routes() -> axum::Router {
         .route("/download/:filename", get(download_file))
 }
 async fn save_file(mut field: Field<'_>, path: PathBuf) -> Result<UploadedFile, MultipartError> {
+    create_dir_all(format!(
+        "{}/uploads/chunks",
+        current_dir().unwrap().display()
+    ))
+    .unwrap();
     let filename = field.file_name().unwrap_or("unknown.bin").to_string();
     let content_type = field.content_type().map(|ct| ct.to_string());
 
@@ -75,7 +81,7 @@ async fn upload(mut multipart: Multipart) -> Result<impl IntoResponse, impl Into
     {
         // Validate filename or content type here if needed
 
-        let upload_path = PathBuf::from("uploads"); // Customize upload directory
+        let upload_path = PathBuf::from(format!("{}/uploads", current_dir().unwrap().display())); // Customize upload directory
         let filename = match field.file_name() {
             Some(filename) => filename,
             None => {
@@ -157,7 +163,11 @@ async fn get_uploads() -> Result<impl IntoResponse, impl IntoResponse> {
     ))
 }
 async fn download_file(Path(filename): Path<String>) -> Result<impl IntoResponse, StatusCode> {
-    let file_path = PathBuf::from("uploads/chunks").join(filename.clone()); // Customize upload directory
+    let file_path = PathBuf::from(format!(
+        "{}/uploads/chunks",
+        current_dir().unwrap().display()
+    ))
+    .join(filename.clone()); // Customize upload directory
 
     if !file_path.exists() {
         return Err(StatusCode::NOT_FOUND);

@@ -1,11 +1,17 @@
-use std::fs::{File, OpenOptions};
+use std::env::current_dir;
+use std::fs::{create_dir, create_dir_all, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 
 pub fn split_file_into_chunks(
     filename: &str,
     chunk_size: u64,
 ) -> Result<Vec<String>, std::io::Error> {
-    let mut file = File::open(format!("./uploads/{}", filename))?;
+    create_dir_all("./uploads/chunks")?;
+    let mut file = File::open(format!(
+        "{}/uploads/{}",
+        current_dir().unwrap().display(),
+        filename
+    ))?;
     let file_size = file.metadata()?.len();
 
     if file_size <= chunk_size {
@@ -22,10 +28,12 @@ pub fn split_file_into_chunks(
         let end_pos = std::cmp::min(start_pos + chunk_size, file_size);
 
         // Open a new file for the chunk with automatic closing
-        let mut chunk_file = OpenOptions::new()
-            .create(true)
-            .write(true)
-            .open(format!("./uploads/chunks/{}_{}", filename, chunk_num))?;
+        let mut chunk_file = OpenOptions::new().create(true).write(true).open(format!(
+            "{}/uploads/chunks/{}_{}",
+            current_dir().unwrap().display(),
+            filename,
+            chunk_num
+        ))?;
 
         // Seek to the desired position in the original file
         file.seek(SeekFrom::Start(start_pos))?;
@@ -49,7 +57,10 @@ pub fn split_file_into_chunks(
         // Add the chunk filename to the vector
         chunk_filenames.push(format!("{}_{}", filename, chunk_num));
 
-        println!("Created chunk: {} ({} bytes)", filename, bytes_read);
+        println!(
+            "Created chunk: {}{} ({} bytes)",
+            filename, chunk_num, bytes_read
+        );
     }
 
     Ok(chunk_filenames)

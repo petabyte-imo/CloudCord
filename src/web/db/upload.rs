@@ -11,61 +11,7 @@ impl UploadDatabase {
         let pool = sqlx::postgres::PgPool::connect(url).await.unwrap();
         Ok(Self { pool })
     }
-    /*   pub async fn create_table(&self) -> Result<(), sqlx::Error> {
-        sqlx::query(
-            "CREATE TABLE IF NOT EXISTS files (
-                file_name VARCHAR PRIMARY KEY,
-                file_size VARCHAR NOT NULL
-            )",
-        )
-        .execute(&self.pool)
-        .await?;
-        Ok(())
-    }
-    pub async fn add_file(&self, file_name: &str, file_size: &str) -> Result<(), sqlx::Error> {
-        self.create_table().await?;
-        let mut transaction = self.pool.begin().await?;
-        let q = "SELECT EXISTS(SELECT 1 FROM files WHERE file_name = $1)";
-        let row = sqlx::query(q)
-            .bind(file_name)
-            .bind(file_size)
-            .fetch_one(&mut *transaction)
-            .await?;
-        transaction.commit().await?;
 
-        let exists = row.get::<bool, &str>("exists");
-
-        if !exists {
-            let mut transaction = self.pool.begin().await?;
-
-            let sql = "INSERT INTO files (file_name, file_size) VALUES ($1, $2)";
-
-            sqlx::query(sql)
-                .bind(file_name) // Bind the actual 'file_name' variable
-                .bind(file_size) // Bind the 'file_size' converted to i64 (if applicable)
-                .execute(&mut *transaction)
-                .await?;
-
-            transaction.commit().await?;
-        }
-        Ok(())
-    }
-    pub async fn get_files(&self) -> Result<Vec<(String, String)>, sqlx::Error> {
-        self.create_table().await?;
-        let mut transaction = self.pool.begin().await?;
-        let q = "SELECT * FROM files";
-        let rows = sqlx::query(q).fetch_all(&mut *transaction).await?;
-        transaction.commit().await?;
-        let mut file_info = Vec::new();
-
-        for row in rows.iter() {
-            let hello = row.get::<&str, &str>("file_size").to_string();
-            let grrr = row.get::<&str, &str>("file_name").to_string();
-            println!("File name: {} File Size:{}\n\n", hello, grrr);
-            file_info.push((hello, grrr));
-        }
-        Ok(file_info)
-    } */
     pub async fn create_urls_table(&self) -> Result<(), sqlx::Error> {
         sqlx::query(
             "CREATE TABLE IF NOT EXISTS urls (
@@ -130,18 +76,21 @@ impl UploadDatabase {
 
         for row in rows.iter() {
             let url = row.get::<&str, &str>("url").to_string();
-            println!("Url : {} ", url);
+
             let filename = row.get::<&str, &str>("file_name").to_string();
-            println!("File name: {} ", filename);
+
             let chunk_filename = row.get::<&str, &str>("chunk_filename").to_string();
-            println!("Chunk File name: {} ", chunk_filename);
+
             file_info.push(UrlInfo {
                 file_name: file_name.to_string(),
                 url: url.clone(),
                 chunk_filename,
             });
 
-            println!("File name: {} File Size:{}\n\n", url, filename);
+            println!(
+                "Retrieving File name: {} And File Size:{}\n\n",
+                url, filename
+            );
         }
         Ok(file_info)
     }
@@ -159,8 +108,21 @@ impl UploadDatabase {
         }
         Ok(file_info)
     }
+
+    pub async fn chunk_filename_exist(&self, chunk_filename: &str) -> Result<bool, sqlx::Error> {
+        self.create_urls_table().await?;
+        let mut transaction = self.pool.begin().await?;
+        let q = "SELECT EXISTS(SELECT 1 FROM urls WHERE chunk_filename = $1)";
+        let row = sqlx::query(q)
+            .bind(chunk_filename)
+            .fetch_one(&mut *transaction)
+            .await?;
+        transaction.commit().await?;
+        let exists = row.get::<bool, &str>("exists");
+        Ok(exists)
+    }
 }
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct UrlInfo {
     pub file_name: String,
     pub url: String,

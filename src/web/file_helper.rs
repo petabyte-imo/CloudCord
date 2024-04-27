@@ -55,7 +55,7 @@ async fn get_files() -> Result<impl IntoResponse, impl IntoResponse> {
         Ok(files) => files,
         Err(_) => return Err(uh_oh()),
     };
-    let json_response = Json(json!({"message": "hello", "result": files}));
+    let json_response = Json(json!({ "result": files}));
     Ok::<
         (axum::http::StatusCode, Json<serde_json::Value>),
         (axum::http::StatusCode, Json<serde_json::Value>),
