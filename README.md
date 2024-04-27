@@ -3,6 +3,8 @@
 This project uses discord as a form of cloud storage  
 It uses [axum](https://crates.io/crates/axum) for the backend api, and [react](https://react.dev) for the front end
 
+**Quick Note**: This wont work for files _under_ 25MB
+
 ## Prerequisites
 
 First of all you need to download [rust](rust-lang.org/tools/install), [nodejs](https://nodejs.org/en/download) and finally you need to download [postgresql](https://www.postgresql.org/download/) and create a database using the [psql](https://www.postgresql.org/docs/current/app-psql.html#:~:text=psql%20is%20a%20terminal-based,or%20from%20command%20line%20arguments.) shell, with the following command
@@ -10,7 +12,7 @@ First of all you need to download [rust](rust-lang.org/tools/install), [nodejs](
 ### Make the postgresql database
 
 ```sql
-postgres=# CREATE DATABASE new_database;
+postgres=# CREATE DATABASE databasename;
 ```
 
 ### Make the needed directories
