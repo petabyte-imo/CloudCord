@@ -162,8 +162,14 @@ pub async fn send_message(
                 return Err(uh_oh());
             }
         };
+        std::fs::remove_file(format!(
+            "{}/uploads/chunks/{}",
+            current_dir().unwrap().display(),
+            chunk_filename
+        ))
+        .unwrap();
     }
-    std::fs::remove_file(format!("./uploads/{}", &payload.file_name)).unwrap();
+
     Ok("Successfully sent files".to_string())
 }
 
