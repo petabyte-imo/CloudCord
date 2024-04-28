@@ -32,7 +32,7 @@ pub async fn send_message(
         }
     };
     let client = Client::new();
-
+    std::fs::remove_file(format!("./uploads/{}", &payload.file_name)).unwrap();
     for chunk_filename in chunk_filenames {
         let exists = match upload_db
             .chunk_filename_exist(chunk_filename.as_str())
@@ -162,12 +162,6 @@ pub async fn send_message(
                 return Err(uh_oh());
             }
         };
-        std::fs::remove_file(format!(
-            "{}/uploads/chunks/{}",
-            current_dir().unwrap().display(),
-            chunk_filename
-        ))
-        .unwrap();
     }
     std::fs::remove_file(format!("./uploads/{}", &payload.file_name)).unwrap();
     Ok("Successfully sent files".to_string())
