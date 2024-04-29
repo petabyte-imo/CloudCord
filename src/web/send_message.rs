@@ -11,14 +11,19 @@ use serde_json::{json, Value};
 pub async fn send_message(
     payload: MessagePayload,
 ) -> core::result::Result<String, impl IntoResponse> {
-    println!("->>  Starting to Send Messages To Discord",);
+    //Handler print
+    println!("->>  Starting to Send Messages To Discord");
+    //Initialize database to store the uploaded files info
     let upload_db = match UploadDatabase::new().await {
         Ok(db) => db,
         Err(_) => return Err(uh_oh()),
     };
+    //Initialize file info to send to the split_file_into_chunks function
     let file_name = &payload.file_name;
-    let chunk_size = 25 * 1024 * 1024; // 10 MB
+    let chunk_size = 25 * 1024 * 1024;
+    // 10 MB
 
+    //Get the chunk filenames from the split_file_into_chunks function
     let chunk_filenames = match split_file_into_chunks(file_name.as_str(), chunk_size) {
         Ok(chunk_filenames) => chunk_filenames,
         Err(e) => {
@@ -31,9 +36,11 @@ pub async fn send_message(
             return Err(uh_oh());
         }
     };
+    //Define reqwest client to send requests with
     let client = Client::new();
 
     for chunk_filename in chunk_filenames.clone().iter() {
+        //Make sure the chunk file doesn't already exist
         let exists = match upload_db
             .chunk_filename_exist(chunk_filename.as_str())
             .await
@@ -41,7 +48,7 @@ pub async fn send_message(
             Ok(exists) => exists,
             Err(_) => return Err(uh_oh()),
         };
-
+        // Make sure that the file doesn't already exist, and that it isn't a file, that is under 25MB
         if exists.0 && exists.1 > 1 {
             println!("Chunk file {} already exists", chunk_filename);
             std::fs::remove_file(format!(
@@ -60,7 +67,8 @@ pub async fn send_message(
             .unwrap();
             continue;
         }
-        let mut file: File;
+        //Define the path to the file that will be uploaded
+        //And making sure the file isnt a file under 25MB
         let path;
         if chunk_filenames.len() == 1 {
             path = PathBuf::from(format!(
@@ -75,7 +83,8 @@ pub async fn send_message(
                 chunk_filename
             ));
         }
-        file = match File::open(&path) {
+        //Open the file from the path and read the data in it
+        let mut file = match File::open(&path) {
             Ok(file) => file,
             Err(_) => return Err(uh_oh()),
         };
@@ -85,7 +94,7 @@ pub async fn send_message(
             Ok(_) => (),
             Err(_) => return Err(uh_oh()),
         }
-
+        //Send the file to discord
         println!("Uploading to discord");
         let res = match client
             .post(format!(
@@ -168,6 +177,7 @@ pub async fn send_message(
             Some(upload_filename) => upload_filename,
             None => return Err(uh_oh()),
         };
+        //Add the url to the database, to be able to download it later
         match upload_db
             .add_url(
                 url,
@@ -182,6 +192,7 @@ pub async fn send_message(
                 return Err(uh_oh());
             }
         };
+        //Remove the file from the uploads directory
         std::fs::remove_file(path).unwrap();
     }
 

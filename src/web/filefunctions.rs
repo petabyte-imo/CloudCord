@@ -2,6 +2,7 @@ use std::env::current_dir;
 use std::fs::{create_dir, create_dir_all, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 
+//This function splits the file into chunks
 pub fn split_file_into_chunks(
     filename: &str,
     chunk_size: u64,
@@ -13,7 +14,7 @@ pub fn split_file_into_chunks(
         filename
     ))?;
     let file_size = file.metadata()?.len();
-
+    //This right here, makes sure that the file isnt smaller than the chunk size (25MB)
     if file_size <= chunk_size {
         let file_chunk_names = vec![filename.to_string()];
 
@@ -84,7 +85,8 @@ pub fn reassemble_file_from_chunks(filename: &str) -> Result<(), std::io::Error>
         let mut chunk_file = File::open(chunk_filename.clone())?;
 
         // Read data from the chunk file and write it to the assembled file
-        let mut buffer = [0u8; 4096]; // Adjust buffer size as needed
+        let mut buffer = [0u8; 4096];
+        // Adjust buffer size as needed
         loop {
             let read_size = chunk_file.read(&mut buffer)?;
             if read_size == 0 {

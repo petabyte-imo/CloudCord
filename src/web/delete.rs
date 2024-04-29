@@ -20,16 +20,19 @@ pub fn routes() -> axum::Router {
 }
 pub async fn delete(
     Path(file_path): Path<String>,
-    query: Query<DownloadOptions>,
 ) -> Result<(StatusCode, Json<Value>), impl IntoResponse> {
+    //Initialize the database
     let upload_db = match UploadDatabase::new().await {
         Ok(db) => db,
         Err(_) => return Err(uh_oh()),
     };
+
+    // Delete the file from the database
     match upload_db.delete_from_filename(&file_path).await {
         Ok(_) => (),
         Err(_) => return Err(uh_oh()),
     };
+    // Return the response body
     Ok::<(StatusCode, axum::Json<Value>), (StatusCode, axum::Json<Value>)>((
         StatusCode::OK,
         Json(json!({"result": format!("Deleted {file_path} successfully")})),

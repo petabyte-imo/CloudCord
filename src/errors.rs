@@ -1,6 +1,8 @@
 use axum::{http::StatusCode, Json};
 use serde_json::json;
 
+//This is the uh_oh error
+//Used when anything that isn't supposed to goes wrong
 pub fn uh_oh() -> (StatusCode, axum::Json<serde_json::Value>) {
     (
         StatusCode::INTERNAL_SERVER_ERROR,
