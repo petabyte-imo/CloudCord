@@ -109,17 +109,28 @@ impl UploadDatabase {
         Ok(file_info)
     }
 
-    pub async fn chunk_filename_exist(&self, chunk_filename: &str) -> Result<bool, sqlx::Error> {
+    pub async fn chunk_filename_exist(
+        &self,
+        chunk_filename: &str,
+    ) -> Result<(bool, i64), sqlx::Error> {
         self.create_urls_table().await?;
         let mut transaction = self.pool.begin().await?;
         let q = "SELECT EXISTS(SELECT 1 FROM urls WHERE chunk_filename = $1)";
+        let q1 = "SELECT COUNT(*) FROM urls WHERE chunk_filename = $1";
         let row = sqlx::query(q)
             .bind(chunk_filename)
             .fetch_one(&mut *transaction)
             .await?;
+        let row1 = sqlx::query(q1)
+            .bind(chunk_filename)
+            .fetch_one(&mut *transaction)
+            .await?;
         transaction.commit().await?;
+
+        let count = row1.get::<i64, &str>("count");
         let exists = row.get::<bool, &str>("exists");
-        Ok(exists)
+
+        Ok((exists, count))
     }
     pub async fn delete_from_filename(&self, file_name: &str) -> Result<(), sqlx::Error> {
         self.create_urls_table().await?;

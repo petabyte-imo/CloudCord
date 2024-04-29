@@ -27,7 +27,7 @@ function App() {
 	return (
 		<div className="container">
 			<header className="header">
-				<h1>File Manager</h1>
+				<h1>Discord Cloud File Manager</h1>
 				<div>
 					<Upload setFileInfo={setFileInfo} />
 				</div>
@@ -36,8 +36,8 @@ function App() {
 			<table className="table">
 				<thead>
 					<tr>
-						<th>Filename</th>
-						<th>Actions</th>
+						<th style={{ textAlign: "center" }}>Filename</th>
+						<th style={{ textAlign: "center" }}>Actions</th>
 					</tr>
 				</thead>
 				<tbody>

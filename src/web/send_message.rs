@@ -1,5 +1,5 @@
 use crate::{errors::uh_oh, secrets::get_secret, web::db::upload::UploadDatabase};
-use std::{env::current_dir, fs::File, io::Read};
+use std::{env::current_dir, fs::File, io::Read, path::PathBuf};
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 
@@ -32,8 +32,8 @@ pub async fn send_message(
         }
     };
     let client = Client::new();
-    std::fs::remove_file(format!("./uploads/{}", &payload.file_name)).unwrap();
-    for chunk_filename in chunk_filenames {
+
+    for chunk_filename in chunk_filenames.clone().iter() {
         let exists = match upload_db
             .chunk_filename_exist(chunk_filename.as_str())
             .await
@@ -41,7 +41,8 @@ pub async fn send_message(
             Ok(exists) => exists,
             Err(_) => return Err(uh_oh()),
         };
-        if exists {
+
+        if exists.0 && exists.1 > 1 {
             println!("Chunk file {} already exists", chunk_filename);
             std::fs::remove_file(format!(
                 "{}/uploads/chunks/{}",
@@ -50,12 +51,31 @@ pub async fn send_message(
             ))
             .unwrap();
             continue;
+        } else if exists.0 && exists.1 == 1 {
+            std::fs::remove_file(format!(
+                "{}/uploads/{}",
+                current_dir().unwrap().display(),
+                chunk_filename
+            ))
+            .unwrap();
+            continue;
         }
-        let mut file = match File::open(format!(
-            "{}/uploads/chunks/{}",
-            current_dir().unwrap().display(),
-            chunk_filename
-        )) {
+        let mut file: File;
+        let path;
+        if chunk_filenames.len() == 1 {
+            path = PathBuf::from(format!(
+                "{}/uploads/{}",
+                current_dir().unwrap().display(),
+                file_name
+            ));
+        } else {
+            path = PathBuf::from(format!(
+                "{}/uploads/chunks/{}",
+                current_dir().unwrap().display(),
+                chunk_filename
+            ));
+        }
+        file = match File::open(&path) {
             Ok(file) => file,
             Err(_) => return Err(uh_oh()),
         };
@@ -152,7 +172,7 @@ pub async fn send_message(
             .add_url(
                 url,
                 &payload.file_name,
-                &chunk_filename,
+                chunk_filename,
                 size.to_string().as_str(),
             )
             .await
@@ -162,12 +182,7 @@ pub async fn send_message(
                 return Err(uh_oh());
             }
         };
-        std::fs::remove_file(format!(
-            "{}/uploads/chunks/{}",
-            current_dir().unwrap().display(),
-            chunk_filename
-        ))
-        .unwrap();
+        std::fs::remove_file(path).unwrap();
     }
 
     Ok("Successfully sent files".to_string())

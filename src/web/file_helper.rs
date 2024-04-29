@@ -41,7 +41,9 @@ pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
         .unwrap();
         file.write_all(&res_bytes).unwrap();
     }
-    reassemble_file_from_chunks(file_name).unwrap();
+    if !files.len() == 1 {
+        reassemble_file_from_chunks(file_name).unwrap();
+    }
 
     Ok(String::from("hello"))
 }
