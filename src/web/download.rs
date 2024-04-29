@@ -35,9 +35,11 @@ pub async fn download(
         return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
     // Read the file into a vector of bytes
-    let file_content = fs::read(file_path.clone())
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-        .unwrap();
+    let file_content =
+        match fs::read(file_path.clone()).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR) {
+            Ok(content) => content,
+            Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
+        };
     // Get the content type, using the file_format crate
     let content_type = file_format::FileFormat::from_bytes(file_content.clone());
     // Default to application/octet-stream
