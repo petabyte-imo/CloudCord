@@ -22,6 +22,7 @@ pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
         Ok(files) => files,
         Err(_) => return Err("5321".to_string()),
     };
+
     //Initialize the reqwest client
     let client = reqwest::Client::new();
 
@@ -32,6 +33,7 @@ pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
             Ok(res) => res,
             Err(_) => return Err("5321".to_string()),
         };
+
         let res_bytes = match res.bytes().await {
             Ok(res_json) => res_json,
             Err(_) => return Err("5321".to_string()),
@@ -44,8 +46,9 @@ pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
         .unwrap();
         file.write_all(&res_bytes).unwrap();
     }
+
     //This will reassemble the file from chunk, only if its multiple chunks
-    if !files.len() == 1 {
+    if files.len() != 1 {
         reassemble_file_from_chunks(file_name).unwrap();
     }
 

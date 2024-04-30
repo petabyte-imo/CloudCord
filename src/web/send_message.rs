@@ -62,7 +62,7 @@ pub async fn send_message(
             std::fs::remove_file(format!(
                 "{}/uploads/{}",
                 current_dir().unwrap().display(),
-                chunk_filename
+                file_name
             ))
             .unwrap();
             continue;
@@ -192,10 +192,28 @@ pub async fn send_message(
                 return Err(uh_oh());
             }
         };
-        //Remove the file from the uploads directory
         std::fs::remove_file(path).unwrap();
     }
+    //Remove the file from the uploads directory
 
+    match upload_db.close().await {
+        Ok(_) => (),
+        Err(_) => {
+            return Err(uh_oh());
+        }
+    };
+    if file_exists(&format!(
+        "{}/uploads/{}",
+        current_dir().unwrap().display(),
+        file_name
+    )) {
+        std::fs::remove_file(format!(
+            "{}/uploads/{}",
+            current_dir().unwrap().display(),
+            file_name
+        ))
+        .unwrap();
+    }
     Ok("Successfully sent files".to_string())
 }
 

@@ -106,3 +106,10 @@ pub fn reassemble_file_from_chunks(filename: &str) -> Result<(), std::io::Error>
 
     Ok(())
 }
+pub fn file_exists(file_path: &str) -> bool {
+    if let Ok(metadata) = std::fs::metadata(file_path) {
+        metadata.is_file()
+    } else {
+        false
+    }
+}

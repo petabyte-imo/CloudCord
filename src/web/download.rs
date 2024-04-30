@@ -74,6 +74,7 @@ pub async fn download(
     //Convert the data stream into a working response body
     let new_body = Body::from_stream(nhmm_body);
     let response = (headers, new_body);
+
     //Remove the file to avoid storage getting filled up
     std::fs::remove_file(filename).unwrap();
 
