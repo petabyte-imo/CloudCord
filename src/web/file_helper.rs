@@ -51,6 +51,7 @@ pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
     if files.len() != 1 {
         reassemble_file_from_chunks(file_name).unwrap();
     }
+    db.close().await;
 
     Ok(String::from("hello"))
 }
@@ -67,6 +68,7 @@ async fn get_files() -> Result<impl IntoResponse, impl IntoResponse> {
         Ok(files) => files,
         Err(_) => return Err(uh_oh()),
     };
+    db.close().await;
     //Create the json response
     let json_response = Json(json!({ "result": files}));
     Ok::<

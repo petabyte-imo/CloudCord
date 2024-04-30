@@ -32,6 +32,7 @@ pub async fn delete(
         Ok(_) => (),
         Err(_) => return Err(uh_oh()),
     };
+    upload_db.close().await;
     // Return the response body
     Ok::<(StatusCode, axum::Json<Value>), (StatusCode, axum::Json<Value>)>((
         StatusCode::OK,

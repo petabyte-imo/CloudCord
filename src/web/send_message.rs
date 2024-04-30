@@ -196,12 +196,7 @@ pub async fn send_message(
     }
     //Remove the file from the uploads directory
 
-    match upload_db.close().await {
-        Ok(_) => (),
-        Err(_) => {
-            return Err(uh_oh());
-        }
-    };
+    upload_db.close().await;
     if file_exists(&format!(
         "{}/uploads/{}",
         current_dir().unwrap().display(),

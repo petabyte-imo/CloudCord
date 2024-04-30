@@ -161,6 +161,9 @@ impl UploadDatabase {
         transaction.commit().await.unwrap();
         Ok(())
     }
+    pub async fn close(&self) {
+        self.pool.close().await
+    }
 }
 #[derive(Clone)]
 pub struct UrlInfo {
