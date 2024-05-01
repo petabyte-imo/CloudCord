@@ -52,6 +52,10 @@ CHANNEL_ID="Channel ID to upload the files to as a form of storage"
 You can build and run it with two simple commands  
 First of all you need to change directory into the directory of the repository
 
+```sh
+$ cd discord-cloud-storage
+```
+
 Then you have to run the release build with this command
 
 ```sh
@@ -60,7 +64,8 @@ $ cargo run -- --release
 
 ### Run the frontend
 
-You can build and run it with two simple commands  
+Open a new terminal       
+Then build and run it with three simple commands  
 First of all you need to change directory into the directory of the repo then the frontend directory
 
 ```sh
