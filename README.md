@@ -67,17 +67,22 @@ First of all you need to change directory into the directory of the repo then th
 $ cd discord-cloud-storage/frontend
 ```
 
-Then you have to run the release build with this command
+Then you have to install the dependancies and run the release build with this command
 
+```sh
+$ npm install
+```
 ```sh
 $ npm run build
 ```
-
+After you've ran the release build, follow the instructions it gives     
 **Note:** if it gives an error, try installing the react-scripts dependency globally with this command
 
 ```sh
 $ npm i -g react-scripts
 ```
+
+
 
 ## To use it
 
