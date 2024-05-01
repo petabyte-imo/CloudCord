@@ -22,8 +22,11 @@ First navigate to the directory of the repo
 $ cd discord-cloud-storage
 ```
 
-Then make the directory
+Then make the needed directories
 
+```sh
+mkdir uploads
+```
 ```sh
 mkdir uploads/chunks
 ```
