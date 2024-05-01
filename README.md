@@ -9,9 +9,11 @@ First of all you need to download [rust](rust-lang.org/tools/install), [nodejs](
 
 ### Make the postgresql database
 
+While in the [psql](https://www.postgresql.org/docs/current/app-psql.html#:~:text=psql%20is%20a%20terminal-based,or%20from%20command%20line%20arguments.) shell run the following command
 ```sql
 CREATE DATABASE databasename;
 ```
+**Note**: Make sure to change the `databasename` to the name of the database you want it to be
 
 ### Make the needed directories
 
