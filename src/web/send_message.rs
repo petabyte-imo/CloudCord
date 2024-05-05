@@ -1,4 +1,11 @@
-use crate::{errors::uh_oh, secrets::get_secret, web::db::upload::UploadDatabase};
+use crate::{
+    errors::uh_oh,
+    secrets::get_secret,
+    web::{
+        db::upload::UploadDatabase,
+        encryption_helper::{decrypt_file, encrypt_file, string_to_bytes},
+    },
+};
 use std::{env::current_dir, fs::File, io::Read, path::PathBuf};
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
@@ -11,6 +18,13 @@ use serde_json::{json, Value};
 pub async fn send_message(
     payload: MessagePayload,
 ) -> core::result::Result<String, impl IntoResponse> {
+    let encrypt = |path: &str| {
+        let key = string_to_bytes(&get_secret("ENCRYPTION_KEY"));
+        let nonce = [0u8; 12];
+        encrypt_file(&key, &nonce, path)
+    };
+    let encryption = get_secret("ENCRYPTION");
+
     //Handler print
     println!("->>  Starting to Send Messages To Discord");
     //Initialize database to store the uploaded files info
@@ -83,6 +97,13 @@ pub async fn send_message(
                 chunk_filename
             ))
         };
+
+        let contents = if encryption.trim().to_lowercase() == "true" {
+            encrypt(path.to_str().unwrap())
+        } else {
+            std::fs::read(path.to_str().unwrap()).unwrap()
+        };
+        std::fs::write(&path, contents).unwrap();
         //Open the file from the path and read the data in it
         let mut file = match File::open(&path) {
             Ok(file) => file,

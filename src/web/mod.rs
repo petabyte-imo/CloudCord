@@ -1,6 +1,7 @@
 pub mod db;
 pub mod delete;
 pub mod download;
+pub mod encryption_helper;
 pub mod file_helper;
 pub mod filefunctions;
 pub mod get_file;

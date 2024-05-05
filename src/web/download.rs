@@ -8,7 +8,12 @@ use axum::{
     routing::get,
 };
 
-use super::file_helper::get_file_from_db;
+use crate::secrets::get_secret;
+
+use super::{
+    encryption_helper::{decrypt_file, string_to_bytes},
+    file_helper::get_file_from_db,
+};
 
 #[derive(Debug, serde::Deserialize)]
 pub struct DownloadOptions {
@@ -23,6 +28,12 @@ pub async fn download(
     Path(file_path): Path<String>,
     query: Query<DownloadOptions>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
+    let decrypt = |path: &str| {
+        let key = string_to_bytes(&get_secret("ENCRYPTION_KEY"));
+        let nonce = [0u8; 12];
+        decrypt_file(&key, &nonce, path)
+    };
+    let encryption = get_secret("ENCRYPTION");
     // Convert to PathBuf
     let file_path = PathBuf::from(file_path.clone());
     // Get the file from the database, using the get_file_from_db function
@@ -35,11 +46,11 @@ pub async fn download(
         return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
     // Read the file into a vector of bytes
-    let file_content =
-        match fs::read(file_path.clone()).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR) {
-            Ok(content) => content,
-            Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
-        };
+    let file_content = if encryption.trim().to_lowercase() == "true" {
+        decrypt(file_path.to_str().unwrap())
+    } else {
+        fs::read(file_path.clone()).unwrap()
+    };
     // Get the content type, using the file_format crate
     let content_type = file_format::FileFormat::from_bytes(file_content.clone());
     // Default to application/octet-stream
@@ -76,7 +87,8 @@ pub async fn download(
     let response = (headers, new_body);
 
     //Remove the file to avoid storage getting filled up
-    std::fs::remove_file(filename).unwrap();
+    std::fs::remove_file(&filename).unwrap();
+    println!("Removed file: {}", filename);
 
     Ok(Ok::<(HeaderMap, Body), ()>(response))
 }

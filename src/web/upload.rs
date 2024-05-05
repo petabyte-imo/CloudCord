@@ -6,8 +6,9 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
     routing::post,
-    Router,
+    Json, Router,
 };
+use serde_json::Value;
 
 use std::{
     env::current_dir,
@@ -82,7 +83,8 @@ async fn upload(mut multipart: Multipart) -> Result<impl IntoResponse, impl Into
         .unwrap()
     {
         let upload_path = PathBuf::from(format!("{}/uploads", current_dir().unwrap().display())); // Customize upload directory
-                                                                                                  //Define the file name
+
+        //Define the file name
         let filename = match field.file_name() {
             Some(filename) => filename,
             None => {
