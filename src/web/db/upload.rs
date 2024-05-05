@@ -165,7 +165,7 @@ impl UploadDatabase {
         self.pool.close().await
     }
 }
-#[derive(Clone)]
+
 pub struct UrlInfo {
     pub file_name: String,
     pub url: String,

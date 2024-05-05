@@ -1,9 +1,4 @@
-use axum::{
-    extract::{Path, Query},
-    response::IntoResponse,
-    routing::post,
-    Json,
-};
+use axum::{extract::Path, response::IntoResponse, routing::post, Json};
 use reqwest::StatusCode;
 use serde_json::{json, Value};
 

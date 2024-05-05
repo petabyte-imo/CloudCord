@@ -24,7 +24,7 @@ async fn main() -> core::result::Result<(), AsyncError> {
     let all_routes = Router::new()
         .merge(crate::web::upload::routes())
         .merge(crate::web::download::routes())
-        .merge(crate::web::file_helper::routes())
+        .merge(crate::web::get_file::routes())
         .merge(crate::web::delete::routes())
         .layer(cors)
         .layer(DefaultBodyLimit::max(1024 * 1024 * 1024));

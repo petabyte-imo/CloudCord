@@ -1,5 +1,5 @@
 use std::env::current_dir;
-use std::fs::{create_dir, create_dir_all, File, OpenOptions};
+use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 
 //This function splits the file into chunks

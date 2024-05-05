@@ -69,20 +69,20 @@ pub async fn send_message(
         }
         //Define the path to the file that will be uploaded
         //And making sure the file isnt a file under 25MB
-        let path;
-        if chunk_filenames.len() == 1 {
-            path = PathBuf::from(format!(
+
+        let path = if chunk_filenames.len() == 1 {
+            PathBuf::from(format!(
                 "{}/uploads/{}",
                 current_dir().unwrap().display(),
                 file_name
-            ));
+            ))
         } else {
-            path = PathBuf::from(format!(
+            PathBuf::from(format!(
                 "{}/uploads/chunks/{}",
                 current_dir().unwrap().display(),
                 chunk_filename
-            ));
-        }
+            ))
+        };
         //Open the file from the path and read the data in it
         let mut file = match File::open(&path) {
             Ok(file) => file,
