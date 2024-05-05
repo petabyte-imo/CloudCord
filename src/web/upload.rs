@@ -6,9 +6,8 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
     routing::post,
-    Json, Router,
+    Router,
 };
-use serde_json::Value;
 
 use std::{
     env::current_dir,

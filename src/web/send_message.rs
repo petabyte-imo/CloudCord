@@ -3,7 +3,7 @@ use crate::{
     secrets::get_secret,
     web::{
         db::upload::UploadDatabase,
-        encryption_helper::{decrypt_file, encrypt_file, string_to_bytes},
+        encryption_helper::{encrypt_file, string_to_bytes},
     },
 };
 use std::{env::current_dir, fs::File, io::Read, path::PathBuf};
@@ -205,6 +205,7 @@ pub async fn send_message(
                 &payload.file_name,
                 chunk_filename,
                 size.to_string().as_str(),
+                &encryption.trim().to_lowercase(),
             )
             .await
         {

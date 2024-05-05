@@ -33,7 +33,7 @@ function FileUploadButton({ setFileInfo }) {
 
 			const fileListData = await fileListResponse.json();
 			// Update the file list in the parent component
-			setFileInfo(fileListData.result);
+			setFileInfo(fileListData);
 		} catch (error) {
 			console.error("Error uploading file:", error);
 			// Handle upload error (e.g., display error message)

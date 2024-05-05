@@ -10,9 +10,11 @@ First of all you need to download [rust](rust-lang.org/tools/install), [nodejs](
 ### Make the postgresql database
 
 While in the [psql](https://www.postgresql.org/docs/current/app-psql.html#:~:text=psql%20is%20a%20terminal-based,or%20from%20command%20line%20arguments.) shell run the following command
+
 ```sql
 CREATE DATABASE databasename;
 ```
+
 **Note**: Make sure to change the `databasename` to the name of the database you want it to be
 
 ### Make the needed directories
@@ -29,6 +31,7 @@ Then make the needed directories
 ```sh
 mkdir uploads
 ```
+
 ```sh
 mkdir uploads/chunks
 ```
@@ -45,6 +48,11 @@ DATABASE_URL="postgresql://username:password@localhost:5432/databasename"
 # The url is formatted like above
 BOT_TOKEN="Your discord bot token"
 CHANNEL_ID="Channel ID to upload the files to as a form of storage"
+ENCRYPTION_KEY="key"
+#Put in any encryption key just cant be bigger than 32 letters
+ENCRYPTION="true or false"
+# Put in if you want to encrypt your files or not
+# Either true or false
 ```
 
 ## To run on linux, macos and windows
@@ -66,7 +74,7 @@ $ cargo run -- --release
 
 ### Run the frontend
 
-Open a new terminal       
+Open a new terminal  
 Then build and run it with three simple commands  
 First of all you need to change directory into the directory of the repo then the frontend directory
 
@@ -79,17 +87,17 @@ Then you have to install the dependancies and run the release build with this co
 ```sh
 $ npm install
 ```
+
 ```sh
 $ npm run build
 ```
-After you've ran the release build, follow the instructions it gives     
+
+After you've ran the release build, follow the instructions it gives  
 **Note:** if it gives an error, try installing the react-scripts dependency globally with this command
 
 ```sh
 $ npm i -g react-scripts
 ```
-
-
 
 ## To use it
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function File(props) {
 	const [isDownloading, setIsDownloading] = useState(false);
@@ -67,9 +67,13 @@ function File(props) {
 				setIsDeleting(false);
 			});
 	};
+	const encrypted = props.encrypted;
 	return (
 		<tr>
-			<td className="fileName">{`${props.fileName}`}</td>
+			<td className="fileName">
+				{`${props.fileName}`} (
+				{encrypted === "true" ? "Encrypted" : "Not Encrypted"})
+			</td>
 			<td className="buttonContainer">
 				<button
 					className="downloadBtn"

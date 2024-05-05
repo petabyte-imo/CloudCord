@@ -136,7 +136,6 @@ dependencies = [
  "chacha20poly1305",
  "file-format",
  "futures",
- "rand",
  "reqwest",
  "serde",
  "serde_json",

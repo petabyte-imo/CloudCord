@@ -19,7 +19,8 @@ impl UploadDatabase {
                 url VARCHAR PRIMARY KEY,
                 file_name VARCHAR NOT NULL,
                 chunk_filename VARCHAR NOT NULL,
-                chunk_size VARCHAR NOT NULL
+                chunk_size VARCHAR NOT NULL,
+                encrypted VARCHAR NOT NULL
             )",
         )
         .execute(&self.pool)
@@ -34,6 +35,7 @@ impl UploadDatabase {
         file_name: &str,
         chunk_filename: &str,
         size: &str,
+        encrypted: &str,
     ) -> Result<(), sqlx::Error> {
         self.create_urls_table().await?;
         //Initialize the transaction
@@ -52,12 +54,13 @@ impl UploadDatabase {
         if !exists {
             let mut transaction = self.pool.begin().await?;
             sqlx::query(
-                "INSERT INTO urls (url, file_name, chunk_filename, chunk_size) VALUES ($1, $2, $3, $4)",
+                "INSERT INTO urls (url, file_name, chunk_filename, chunk_size, encrypted) VALUES ($1, $2, $3, $4, $5)",
             )
             .bind(url)
             .bind(file_name)
             .bind(chunk_filename)
             .bind(size)
+            .bind(encrypted)
             .execute(&mut *transaction)
             .await
             .unwrap();
@@ -103,7 +106,7 @@ impl UploadDatabase {
         }
         Ok(file_info)
     }
-    pub async fn get_urls(&self) -> Result<Vec<String>, sqlx::Error> {
+    pub async fn get_names(&self) -> Result<Vec<String>, sqlx::Error> {
         self.create_urls_table().await?;
         //Initialize the transaction
         let mut transaction = self.pool.begin().await?;
@@ -117,6 +120,32 @@ impl UploadDatabase {
         for row in rows.iter() {
             //Get the filename from the row
             let filename = row.get::<&str, &str>("file_name").to_string();
+            //Push it to the file info vector
+            file_info.push(filename);
+        }
+        Ok(file_info)
+    }
+    pub async fn get_encrypted(&self) -> Result<Vec<String>, sqlx::Error> {
+        self.create_urls_table().await?;
+        //Initialize the transaction
+        let mut transaction = self.pool.begin().await?;
+        //Select the distinct file names from the urls table
+        let q = r#"SELECT u.file_name, e.encrypted
+        FROM (
+            SELECT DISTINCT file_name
+            FROM urls
+        ) AS u
+        LEFT JOIN urls AS e ON u.file_name = e.file_name;
+        "#;
+        let rows = sqlx::query(q).fetch_all(&mut *transaction).await.unwrap();
+        transaction.commit().await?;
+        //Create a file info vector to store the urls that we got from the database
+        let mut file_info = Vec::new();
+        //We start an iteration, to iterate over the rows we got
+        for row in rows.iter() {
+            //Get the filename from the row
+
+            let filename = row.get::<&str, usize>(1).to_string();
             //Push it to the file info vector
             file_info.push(filename);
         }

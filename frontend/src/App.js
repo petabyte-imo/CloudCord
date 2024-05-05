@@ -4,7 +4,7 @@ import File from "./File";
 import Upload from "./Upload";
 
 function App() {
-	const [fileInfo, setFileInfo] = useState([]);
+	const [fileInfo, setFileInfo] = useState({});
 
 	useEffect(() => {
 		fetchFileList();
@@ -17,7 +17,7 @@ function App() {
 				throw new Error("Failed to fetch file list");
 			}
 			const data = await response.json();
-			setFileInfo(data.result);
+			setFileInfo(data);
 		} catch (error) {
 			console.error("Error fetching file list:", error);
 			// Handle fetch error (e.g., display error message)
@@ -41,9 +41,14 @@ function App() {
 					</tr>
 				</thead>
 				<tbody>
-					{fileInfo.length > 0 ? (
-						fileInfo.map((file, key) => (
-							<File fileName={file} setFileInfo={setFileInfo} />
+					{fileInfo && fileInfo.names && fileInfo.names.length > 0 ? (
+						fileInfo.names.map((fileName, key) => (
+							<File
+								key={key} // Ensure each element in a list has a unique key
+								fileName={fileName}
+								setFileInfo={setFileInfo}
+								encrypted={fileInfo.encryptions[key]} // Access the corresponding encryption using the key
+							/>
 						))
 					) : (
 						<tr>
