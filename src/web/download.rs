@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf, str::FromStr};
+use std::{fs, path::PathBuf, str::FromStr, sync::Arc};
 
 use axum::{
     body::Body,
@@ -6,9 +6,10 @@ use axum::{
     http::{HeaderMap, HeaderName, HeaderValue, StatusCode},
     response::IntoResponse,
     routing::get,
+    Extension,
 };
 
-use crate::secrets::get_secret;
+use crate::States;
 
 use super::{
     encryption_helper::{decrypt_file, string_to_bytes},
@@ -25,15 +26,16 @@ pub fn routes() -> axum::Router {
 }
 // Define the download function
 pub async fn download(
+    state: Extension<Arc<States>>,
     Path(file_path): Path<String>,
     query: Query<DownloadOptions>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let decrypt = |path: &str| {
-        let key = string_to_bytes(&get_secret("ENCRYPTION_KEY"));
+        let key = string_to_bytes(state.key.lock().unwrap().as_str());
         let nonce = [0u8; 12];
         decrypt_file(&key, &nonce, path)
     };
-    let encryption = get_secret("ENCRYPTION");
+    let encryption = state.key.lock().unwrap().to_string();
     // Convert to PathBuf
     let file_path = PathBuf::from(file_path.clone());
     // Get the file from the database, using the get_file_from_db function

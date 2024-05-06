@@ -48,8 +48,6 @@ DATABASE_URL="postgresql://username:password@localhost:5432/databasename"
 # The url is formatted like above
 BOT_TOKEN="Your discord bot token"
 CHANNEL_ID="Channel ID to upload the files to as a form of storage"
-ENCRYPTION_KEY="key"
-#Put in any encryption key just cant be bigger than 32 letters
 ```
 
 ## To run on linux, macos and windows
@@ -104,6 +102,7 @@ Then Navigate to http://127.0.0.1:3000
 ### To upload a file
 
 To upload a file, first of all select if you want it the contents to be encrypted or not, by clicking on the checkbox  
+And also set the encryption key, can be any string smaller than 32 characters  
 Then go to the top right of the table, and click on the `Choose File` button  
 Once you've chosen the file you want to upload, click on the `Upload File` button
 

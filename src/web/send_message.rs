@@ -5,16 +5,11 @@ use crate::{
         db::upload::UploadDatabase,
         encryption_helper::{encrypt_file, string_to_bytes},
     },
+    States,
 };
-use std::{
-    env::current_dir,
-    fs::File,
-    io::Read,
-    path::PathBuf,
-    sync::{atomic::AtomicBool, Arc},
-};
+use std::{env::current_dir, fs::File, io::Read, path::PathBuf};
 
-use axum::{http::StatusCode, response::IntoResponse, Extension, Json};
+use axum::{http::StatusCode, response::IntoResponse, Json};
 
 use crate::web::filefunctions::*;
 use reqwest::Client;
@@ -22,15 +17,15 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub async fn send_message(
-    state: &Extension<Arc<AtomicBool>>,
+    state: &States,
     payload: MessagePayload,
 ) -> core::result::Result<String, impl IntoResponse> {
     let encrypt = |path: &str| {
-        let key = string_to_bytes(&get_secret("ENCRYPTION_KEY"));
+        let key = string_to_bytes(state.key.lock().unwrap().as_str());
         let nonce = [0u8; 12];
         encrypt_file(&key, &nonce, path)
     };
-    let encryption = state.load(std::sync::atomic::Ordering::Relaxed);
+    let encryption = state.encrypted.load(std::sync::atomic::Ordering::Relaxed);
 
     //Handler print
     println!("->>  Starting to Send Messages To Discord");

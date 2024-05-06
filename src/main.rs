@@ -1,3 +1,4 @@
+use std::sync::Mutex;
 use std::sync::{atomic::AtomicBool, Arc};
 
 use axum::http::Method;
@@ -12,9 +13,17 @@ type AsyncError = Box<dyn std::error::Error + Send + Sync>;
 mod errors;
 mod secrets;
 mod web;
+#[derive(Clone)]
+pub struct States {
+    pub encrypted: Arc<AtomicBool>,
+    pub key: Arc<Mutex<String>>,
+}
 #[tokio::main]
 async fn main() -> core::result::Result<(), AsyncError> {
-    let state = Arc::new(AtomicBool::new(false));
+    let state = States {
+        encrypted: Arc::new(AtomicBool::new(false)),
+        key: Arc::new(Mutex::new("".to_string())),
+    };
 
     // Initialize cors
     let cors = CorsLayer::new()
@@ -27,7 +36,7 @@ async fn main() -> core::result::Result<(), AsyncError> {
     //Initialize routes and middleware
     let all_routes = Router::new()
         .merge(crate::web::upload::routes().layer(Extension(state.clone())))
-        .merge(crate::web::download::routes())
+        .merge(crate::web::download::routes().layer(Extension(state.clone())))
         .merge(crate::web::get_file::routes())
         .merge(crate::web::delete::routes())
         .merge(crate::web::set_encrypted::routes().layer(Extension(state.clone())))

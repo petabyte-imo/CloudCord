@@ -65,6 +65,24 @@ function FileUploadButton({ setFileInfo, setEncrypted }) {
 					});
 				}}
 			/>
+			<label htmlFor="selectEncryptKey">| Encryption Key</label>
+			<input
+				type="text"
+				id="selectEncryptKey"
+				maxLength="32" // Set maximum length to 32 bytes
+				onChange={() => {
+					const inputBox = document.getElementById("selectEncryptKey");
+					let key = inputBox.value;
+
+					fetch("http://localhost:8080/set_encrypted_key", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(key),
+					});
+				}}
+			/>
 
 			<input
 				type="file"

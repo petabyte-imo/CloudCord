@@ -14,10 +14,9 @@ use std::{
     fs::{create_dir_all, OpenOptions},
     io::{BufWriter, Write},
     path::PathBuf,
-    sync::{atomic::AtomicBool, Arc},
 };
 
-use crate::{errors::uh_oh, web::send_message::send_message};
+use crate::{errors::uh_oh, web::send_message::send_message, States};
 
 use super::send_message::MessagePayload;
 
@@ -66,7 +65,7 @@ async fn save_file(mut field: Field<'_>, path: PathBuf) -> Result<UploadedFile, 
 }
 
 async fn upload(
-    state: Extension<Arc<AtomicBool>>,
+    state: Extension<States>,
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     //Handler print

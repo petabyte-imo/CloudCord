@@ -12,11 +12,16 @@ pub fn string_to_bytes(input: &str) -> [u8; 32] {
     let input_bytes = input.as_bytes();
 
     for (i, &byte) in input_bytes.iter().enumerate() {
-        bytes[i] = byte;
+        if i < 32 {
+            bytes[i] = byte;
+        } else {
+            break;
+        }
     }
 
     bytes
 }
+
 pub fn encrypt_file(key: &[u8], nonce: &[u8], filename: &str) -> Vec<u8> {
     let filecontents = std::fs::read(filename).unwrap();
     let plaintext = read_file(&filecontents);
