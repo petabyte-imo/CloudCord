@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function FileUploadButton({ setFileInfo }) {
+function FileUploadButton({ setFileInfo, setEncrypted }) {
 	const [selectedFile, setSelectedFile] = useState(null);
 
 	const handleFileChange = (event) => {
@@ -44,6 +44,28 @@ function FileUploadButton({ setFileInfo }) {
 
 	return (
 		<div>
+			<label htmlFor="selectEncrypted">Encrypted</label>
+			<input
+				type="checkbox"
+				id="selectEncrypted"
+				onChange={() => {
+					const checkbox = document.getElementById("selectEncrypted");
+					let checked = checkbox.checked;
+
+					if (checkbox.checked) {
+						setEncrypted(true);
+					}
+
+					fetch("http://localhost:8080/set_encrypted", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(checked),
+					});
+				}}
+			/>
+
 			<input
 				type="file"
 				id="selectInput"

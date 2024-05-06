@@ -1,6 +1,8 @@
-use axum::extract::DefaultBodyLimit;
+use std::sync::{atomic::AtomicBool, Arc};
+
 use axum::http::Method;
 use axum::Router;
+use axum::{extract::DefaultBodyLimit, Extension};
 use tokio::net::TcpListener;
 
 use tower_http::cors::{Any, CorsLayer};
@@ -12,6 +14,8 @@ mod secrets;
 mod web;
 #[tokio::main]
 async fn main() -> core::result::Result<(), AsyncError> {
+    let state = Arc::new(AtomicBool::new(false));
+
     // Initialize cors
     let cors = CorsLayer::new()
         // allow `GET` and `POST` when accessing the resource
@@ -22,10 +26,11 @@ async fn main() -> core::result::Result<(), AsyncError> {
 
     //Initialize routes and middleware
     let all_routes = Router::new()
-        .merge(crate::web::upload::routes())
+        .merge(crate::web::upload::routes().layer(Extension(state.clone())))
         .merge(crate::web::download::routes())
         .merge(crate::web::get_file::routes())
         .merge(crate::web::delete::routes())
+        .merge(crate::web::set_encrypted::routes().layer(Extension(state.clone())))
         .layer(cors)
         .layer(DefaultBodyLimit::max(1024 * 1024 * 1024));
     //Bind TCPListener

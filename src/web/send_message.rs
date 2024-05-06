@@ -6,9 +6,15 @@ use crate::{
         encryption_helper::{encrypt_file, string_to_bytes},
     },
 };
-use std::{env::current_dir, fs::File, io::Read, path::PathBuf};
+use std::{
+    env::current_dir,
+    fs::File,
+    io::Read,
+    path::PathBuf,
+    sync::{atomic::AtomicBool, Arc},
+};
 
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{http::StatusCode, response::IntoResponse, Extension, Json};
 
 use crate::web::filefunctions::*;
 use reqwest::Client;
@@ -16,6 +22,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub async fn send_message(
+    state: &Extension<Arc<AtomicBool>>,
     payload: MessagePayload,
 ) -> core::result::Result<String, impl IntoResponse> {
     let encrypt = |path: &str| {
@@ -23,7 +30,7 @@ pub async fn send_message(
         let nonce = [0u8; 12];
         encrypt_file(&key, &nonce, path)
     };
-    let encryption = get_secret("ENCRYPTION");
+    let encryption = state.load(std::sync::atomic::Ordering::Relaxed);
 
     //Handler print
     println!("->>  Starting to Send Messages To Discord");
@@ -98,7 +105,7 @@ pub async fn send_message(
             ))
         };
 
-        let contents = if encryption.trim().to_lowercase() == "true" {
+        let contents = if encryption {
             encrypt(path.to_str().unwrap())
         } else {
             std::fs::read(path.to_str().unwrap()).unwrap()
@@ -205,7 +212,7 @@ pub async fn send_message(
                 &payload.file_name,
                 chunk_filename,
                 size.to_string().as_str(),
-                &encryption.trim().to_lowercase(),
+                &encryption.to_string().trim().to_lowercase(),
             )
             .await
         {

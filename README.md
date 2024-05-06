@@ -50,9 +50,6 @@ BOT_TOKEN="Your discord bot token"
 CHANNEL_ID="Channel ID to upload the files to as a form of storage"
 ENCRYPTION_KEY="key"
 #Put in any encryption key just cant be bigger than 32 letters
-ENCRYPTION="true or false"
-# Put in if you want to encrypt your files or not
-# Either true or false
 ```
 
 ## To run on linux, macos and windows
@@ -106,7 +103,8 @@ Then Navigate to http://127.0.0.1:3000
 
 ### To upload a file
 
-To upload a file, go to the top right of the table, and click on the `Choose File` button  
+To upload a file, first of all select if you want it the contents to be encrypted or not, by clicking on the checkbox  
+Then go to the top right of the table, and click on the `Choose File` button  
 Once you've chosen the file you want to upload, click on the `Upload File` button
 
 - **Warning**: Once you've clicked on the `Upload File` button, don't refresh the page, as it will interrupt the uploading process and might cause the files to be left in your uploads/chunks, which won't be good for our storage  

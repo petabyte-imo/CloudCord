@@ -51,6 +51,9 @@ function File(props) {
 				if (!response.ok) {
 					throw new Error("Failed to delete file");
 				}
+				setTimeout(() => {
+					setIsDeleting(true);
+				}, 3000);
 				// Fetch the file list again after deletion
 				return fetch(`http://localhost:8080/files`);
 			})

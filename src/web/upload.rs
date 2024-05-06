@@ -6,7 +6,7 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
     routing::post,
-    Router,
+    Extension, Router,
 };
 
 use std::{
@@ -14,6 +14,7 @@ use std::{
     fs::{create_dir_all, OpenOptions},
     io::{BufWriter, Write},
     path::PathBuf,
+    sync::{atomic::AtomicBool, Arc},
 };
 
 use crate::{errors::uh_oh, web::send_message::send_message};
@@ -64,11 +65,15 @@ async fn save_file(mut field: Field<'_>, path: PathBuf) -> Result<UploadedFile, 
     })
 }
 
-async fn upload(mut multipart: Multipart) -> Result<impl IntoResponse, impl IntoResponse> {
+async fn upload(
+    state: Extension<Arc<AtomicBool>>,
+    mut multipart: Multipart,
+) -> Result<impl IntoResponse, impl IntoResponse> {
     //Handler print
     println!("->> {:12} - upload", "HANDLER");
     //Define files vector to store all files
     let mut files = Vec::new();
+
     //Make sure there is a file in the request
     while let Some(field) = multipart
         .next_field()
@@ -102,7 +107,8 @@ async fn upload(mut multipart: Multipart) -> Result<impl IntoResponse, impl Into
         files.push(uploaded_file.clone());
 
         // region:  ---SendMessage
-        match send_message(payload).await {
+
+        match send_message(&state, payload).await {
             Ok(o) => {
                 println!("{o}");
                 o
