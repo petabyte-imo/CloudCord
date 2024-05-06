@@ -5,7 +5,6 @@ import Upload from "./Upload";
 
 function App() {
 	const [fileInfo, setFileInfo] = useState({});
-	const [encrypted, setEncrypted] = useState(false);
 
 	useEffect(() => {
 		fetchFileList();
@@ -30,7 +29,7 @@ function App() {
 			<header className="header">
 				<h1>Discord Cloud File Manager</h1>
 				<div>
-					<Upload setFileInfo={setFileInfo} setEncrypted={setEncrypted} />
+					<Upload setFileInfo={setFileInfo} />
 				</div>
 			</header>
 

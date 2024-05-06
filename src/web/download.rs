@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf, str::FromStr, sync::Arc};
+use std::{fs, path::PathBuf, str::FromStr};
 
 use axum::{
     body::Body,
@@ -26,7 +26,7 @@ pub fn routes() -> axum::Router {
 }
 // Define the download function
 pub async fn download(
-    state: Extension<Arc<States>>,
+    state: Extension<States>,
     Path(file_path): Path<String>,
     query: Query<DownloadOptions>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
@@ -35,7 +35,7 @@ pub async fn download(
         let nonce = [0u8; 12];
         decrypt_file(&key, &nonce, path)
     };
-    let encryption = state.key.lock().unwrap().to_string();
+    let encryption = state.encrypted.load(std::sync::atomic::Ordering::Relaxed);
     // Convert to PathBuf
     let file_path = PathBuf::from(file_path.clone());
     // Get the file from the database, using the get_file_from_db function
@@ -48,7 +48,7 @@ pub async fn download(
         return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
     // Read the file into a vector of bytes
-    let file_content = if encryption.trim().to_lowercase() == "true" {
+    let file_content = if encryption {
         decrypt(file_path.to_str().unwrap())
     } else {
         fs::read(file_path.clone()).unwrap()

@@ -34,6 +34,26 @@ function File(props) {
 		setIsDownloading(true);
 
 		try {
+			const checkbox = document.getElementById("selectEncrypted");
+			let checked = checkbox.checked;
+
+			await fetch("http://localhost:8080/set_encrypted", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(checked),
+			});
+			const inputBox = document.getElementById("selectEncryptKey");
+			let key = inputBox.value;
+
+			await fetch("http://localhost:8080/set_encrypted_key", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(key),
+			});
 			await downloadFile(filePath);
 		} catch (error) {
 			console.error("Error downloading file:", error);

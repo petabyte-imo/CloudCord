@@ -112,7 +112,9 @@ Once you've chosen the file you want to upload, click on the `Upload File` butto
 
 ### To download a file
 
-To download a file, go to the table, where you should see the list of uploaded files, and click on the `Download File` button, which is in the `Actions` column, then it will process the chunks by downloading them, and reassembling them
+To download a file, if the file is encrypted, enter the key that you used to encrypt it, and check the `Encrypted` checkbox  
+Then go to the table, where you should see the list of uploaded files, and click on the `Download File` button, which is in the `Actions` column, then it will process the chunks by downloading them, and reassembling them
+**Note:** If the file isn't encrypted uncheck the `Encrypted` checkbox, and download the file like you normally would
 
 - **Warning**: Again once you've clicked on the `Download File` button, don't refresh the page, for the same reasons stated in the [`To upload a file`](#to-upload-a-file) section
 
