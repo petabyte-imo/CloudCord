@@ -1,10 +1,8 @@
 import Modal from "./Modal";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AppContext } from "./App";
 function File(props) {
 	const {
-		isDownloading,
-		setIsDownloading,
 		isDeleting,
 		setIsDeleting,
 		filePath,
@@ -15,6 +13,7 @@ function File(props) {
 		setEncryptionBool,
 		encryptionBool,
 	} = useContext(AppContext);
+	const [isDownloading, setIsDownloading] = useState(false);
 	const deleteClick = () => {
 		setIsDeleting(true);
 		fetch(`http://localhost:8080/api/delete/${filePath}`, {
@@ -127,7 +126,7 @@ function File(props) {
 						}
 					}}
 				>
-					Download File
+					{isDownloading ? "Processing..." : "Download File"}
 				</button>
 
 				<button
