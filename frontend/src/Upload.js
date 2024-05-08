@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AppContext } from "./App";
 
 function FileUploadButton() {
 	const { selectedFile, setSelectedFile, setFileInfo } = useContext(AppContext);
-
+	const [encryptedBool, setEncryptedBool] = useState(false);
 	const handleFileChange = (event) => {
 		setSelectedFile(event.target.files[0]);
 	};
@@ -66,14 +66,21 @@ function FileUploadButton() {
 	return (
 		<div>
 			<label htmlFor="selectEncrypted">Encrypted</label>
-			<input type="checkbox" id="selectEncrypted" />
-			<label htmlFor="selectEncryptKey">| Encryption Key</label>
 			<input
-				type="text"
-				id="selectEncryptKey"
-				maxLength="32" // Set maximum length to 32 bytes
+				type="checkbox"
+				id="selectEncrypted"
+				onChange={(e) => setEncryptedBool(e.target.checked)}
 			/>
-
+			{encryptedBool && (
+				<>
+					<label htmlFor="selectEncryptKey">| Encryption Key </label>
+					<input
+						type="text"
+						id="selectEncryptKey"
+						maxLength="32" // Set maximum length to 32 bytes
+					/>
+				</>
+			)}
 			<input
 				type="file"
 				id="selectInput"
