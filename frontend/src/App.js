@@ -56,7 +56,7 @@ function App() {
 				}}
 			>
 				<header className="header">
-					<h1>Discord Cloud File Manager</h1>
+					<h1>CloudCord File Manager</h1>
 					<div>
 						<Upload />
 					</div>

@@ -1,4 +1,4 @@
-# Discord Cloud Storage
+# CloudCord
 
 This project uses discord as a form of cloud storage  
 It uses [axum](https://crates.io/crates/axum) for the backend api, and [react](https://react.dev) for the front end
@@ -23,7 +23,7 @@ And you also need to make a uploads and uploads/chunks directory with this comma
 First navigate to the directory of the repo
 
 ```sh
-$ cd discord-cloud-storage
+$ cd CloudCord
 ```
 
 Then make the needed directories
@@ -58,7 +58,7 @@ You can build and run it with two simple commands
 First of all you need to change directory into the directory of the repository
 
 ```sh
-$ cd discord-cloud-storage
+$ cd CloudCord
 ```
 
 Then you have to run the release build with this command
@@ -74,7 +74,7 @@ Then build and run it with three simple commands
 First of all you need to change directory into the directory of the repo then the frontend directory
 
 ```sh
-$ cd discord-cloud-storage/frontend
+$ cd CloudCord/frontend
 ```
 
 Then you have to install the dependancies and run the release build with this command
