@@ -36,5 +36,6 @@ pub fn decrypt_file(key: &[u8], nonce: &[u8], filename: &str) -> Vec<u8> {
     let plaintext = read_file(&filecontents);
     let cipher = ChaCha20Poly1305::new_from_slice(key).unwrap();
     let nonce = Nonce::from_slice(nonce); // 96-bits; unique per message
-    cipher.decrypt(nonce, plaintext).unwrap()
+
+    cipher.decrypt(nonce, plaintext).expect("Banana")
 }

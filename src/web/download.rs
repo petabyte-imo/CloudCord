@@ -31,6 +31,7 @@ pub async fn download(
     query: Query<DownloadOptions>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let decrypt = |path: &str| {
+        println!("key: {}", state.key.lock().unwrap().as_str());
         let key = string_to_bytes(state.key.lock().unwrap().as_str());
         let nonce = [0u8; 12];
         decrypt_file(&key, &nonce, path)

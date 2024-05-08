@@ -1,11 +1,48 @@
-import React, { useState } from "react";
-
+import Modal from "./Modal";
+import { useContext } from "react";
+import { AppContext } from "./App";
 function File(props) {
-	const [isDownloading, setIsDownloading] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const [filePath, setFilePath] = useState(""); // Replace with your actual file path
-	const defaultFilename = "my_downloaded_file.txt"; // Optional default filename
-
+	const {
+		isDownloading,
+		setIsDownloading,
+		isDeleting,
+		setIsDeleting,
+		filePath,
+		setFilePath,
+		encryptionKey,
+		setIsOpen,
+		setFileInfo,
+		setEncryptionBool,
+		encryptionBool,
+	} = useContext(AppContext);
+	const deleteClick = () => {
+		setIsDeleting(true);
+		fetch(`http://localhost:8080/api/delete/${filePath}`, {
+			method: "POST",
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Failed to delete file");
+				}
+				setTimeout(() => {
+					setIsDeleting(true);
+				}, 3000);
+				// Fetch the file list again after deletion
+				return fetch(`http://localhost:8080/files`);
+			})
+			.then((response) => response.json())
+			.then((data) => {
+				// Update the file list in the parent component
+				setFileInfo(data.result);
+			})
+			.catch((error) => {
+				console.error("Error deleting file:", error);
+				// Handle delete error (e.g., display message to user)
+			})
+			.finally(() => {
+				setIsDeleting(false);
+			});
+	};
 	async function downloadFile(filePath, filename = "") {
 		try {
 			const response = await fetch(
@@ -34,8 +71,8 @@ function File(props) {
 		setIsDownloading(true);
 
 		try {
-			const checkbox = document.getElementById("selectEncrypted");
-			let checked = checkbox.checked;
+			let checked = encryptionBool;
+			console.log(checked);
 
 			await fetch("http://localhost:8080/set_encrypted", {
 				method: "POST",
@@ -44,16 +81,17 @@ function File(props) {
 				},
 				body: JSON.stringify(checked),
 			});
-			const inputBox = document.getElementById("selectEncryptKey");
-			let key = inputBox.value;
 
-			await fetch("http://localhost:8080/set_encrypted_key", {
+			let key = encryptionKey;
+
+			fetch("http://localhost:8080/set_encrypted_key", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(key),
 			});
+
 			await downloadFile(filePath);
 		} catch (error) {
 			console.error("Error downloading file:", error);
@@ -62,34 +100,7 @@ function File(props) {
 			setIsDownloading(false);
 		}
 	};
-	const deleteClick = () => {
-		setIsDeleting(true);
-		fetch(`http://localhost:8080/api/delete/${filePath}`, {
-			method: "POST",
-		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Failed to delete file");
-				}
-				setTimeout(() => {
-					setIsDeleting(true);
-				}, 3000);
-				// Fetch the file list again after deletion
-				return fetch(`http://localhost:8080/files`);
-			})
-			.then((response) => response.json())
-			.then((data) => {
-				// Update the file list in the parent component
-				props.setFileInfo(data.result);
-			})
-			.catch((error) => {
-				console.error("Error deleting file:", error);
-				// Handle delete error (e.g., display message to user)
-			})
-			.finally(() => {
-				setIsDeleting(false);
-			});
-	};
+
 	const encrypted = props.encrypted;
 	return (
 		<tr>
@@ -103,11 +114,22 @@ function File(props) {
 					disabled={isDownloading}
 					onClick={() => {
 						setFilePath(props.fileName);
-						downloadClick();
+						// downloadClick();
+
+						if (encrypted === "true") {
+							setEncryptionBool(true);
+							setIsOpen(true);
+							downloadClick();
+						} else {
+							setEncryptionBool(false);
+							setIsOpen(false);
+							downloadClick();
+						}
 					}}
 				>
-					{isDownloading ? "Processing..." : "Download File"}
+					Download File
 				</button>
+
 				<button
 					className="deleteBtn"
 					disabled={isDeleting}
@@ -119,6 +141,7 @@ function File(props) {
 					{isDeleting ? "Processing..." : "Delete File"}
 				</button>
 			</td>
+			<Modal downloadClick={downloadClick} />
 		</tr>
 	);
 }

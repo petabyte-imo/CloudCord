@@ -1,11 +1,19 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import File from "./File";
 import Upload from "./Upload";
 
+export const AppContext = createContext();
 function App() {
 	const [fileInfo, setFileInfo] = useState({});
-
+	const [isDownloading, setIsDownloading] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [filePath, setFilePath] = useState(""); // Replace with your actual file path
+	const [isOpen, setIsOpen] = useState(false);
+	const defaultFilename = "my_downloaded_file.txt"; // Optional default filename
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [encryptionBool, setEncryptionBool] = useState(false);
+	const [encryptionKey, setEncryptionKey] = useState("");
 	useEffect(() => {
 		fetchFileList();
 	}, []); // No dependency array, fetches once on mount
@@ -26,37 +34,56 @@ function App() {
 
 	return (
 		<div className="container">
-			<header className="header">
-				<h1>Discord Cloud File Manager</h1>
-				<div>
-					<Upload setFileInfo={setFileInfo} />
-				</div>
-			</header>
-
-			<table className="table">
-				<thead>
-					<tr>
-						<th style={{ textAlign: "center" }}>Filename</th>
-						<th style={{ textAlign: "center" }}>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{fileInfo && fileInfo.names && fileInfo.names.length > 0 ? (
-						fileInfo.names.map((fileName, key) => (
-							<File
-								key={key} // Ensure each element in a list has a unique key
-								fileName={fileName}
-								setFileInfo={setFileInfo}
-								encrypted={fileInfo.encryptions[key]} // Access the corresponding encryption using the key
-							/>
-						))
-					) : (
+			<AppContext.Provider
+				value={{
+					fileInfo,
+					setFileInfo,
+					isDownloading,
+					setIsDownloading,
+					isDeleting,
+					setIsDeleting,
+					filePath,
+					setFilePath,
+					isOpen,
+					setIsOpen,
+					defaultFilename,
+					setSelectedFile,
+					selectedFile,
+					encryptionBool,
+					setEncryptionBool,
+					encryptionKey,
+					setEncryptionKey,
+				}}
+			>
+				<header className="header">
+					<h1>Discord Cloud File Manager</h1>
+					<div>
+						<Upload />
+					</div>
+				</header>
+				<table className="table">
+					<thead>
 						<tr>
-							<td colSpan="2">No files uploaded</td>
+							<th style={{ textAlign: "center" }}>Filename</th>
+							<th style={{ textAlign: "center" }}>Actions</th>
 						</tr>
-					)}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{fileInfo && fileInfo.names && fileInfo.names.length > 0 ? (
+							fileInfo.names.map((fileName, key) => (
+								<File
+									fileName={fileName}
+									encrypted={fileInfo.encryptions[key]} // Access the corresponding encryption using the key
+								/>
+							))
+						) : (
+							<tr>
+								<td colSpan="2">No files uploaded</td>
+							</tr>
+						)}
+					</tbody>
+				</table>
+			</AppContext.Provider>
 		</div>
 	);
 }

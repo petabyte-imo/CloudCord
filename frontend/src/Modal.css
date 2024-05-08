@@ -1,0 +1,96 @@
+/* Modal */
+.modal {
+	display: block;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Modal Content/Box */
+/* Modal Content/Box */
+.modal-content {
+	background-color: #fefefe;
+	position: absolute;
+	top: 50%; /* Center vertically */
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%;
+	max-width: 400px;
+	height: 50%; /* Half of the viewport height */
+	max-height: 50vh; /* Set maximum height to 50% of viewport height */
+	border-radius: 20px;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Close Button */
+.close {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+	color: black;
+	text-decoration: none;
+}
+
+/* Checkbox */
+.checkbox {
+	position: absolute;
+	padding: 10px;
+	right: 15px;
+	transform: scale(2);
+	cursor: pointer;
+}
+
+/* Key Input */
+#encryption-key {
+	display: block;
+	width: 95%;
+	height: 25px;
+	margin: auto;
+	padding: 5px;
+	font-size: large;
+	border-radius: 10px;
+	border-width: 3px;
+}
+
+.download-button {
+	background-color: #5fdb46;
+	color: #fff;
+	padding: 12px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	width: 80%; /* Adjust width for larger screens */
+	margin: auto;
+	margin-top: 20px; /* Add margin for separation */
+}
+
+.download-button:hover {
+	background-color: #2e8c4a;
+}
+
+/* Media Queries for Responsive Design */
+@media only screen and (min-width: 768px) {
+	/* Adjust modal width and height for larger screens */
+	.modal-content {
+		width: 60%;
+		height: 60%;
+	}
+}
+/* I love chatgpt and codeium :3 */
