@@ -14,7 +14,7 @@ pub fn split_file_into_chunks(
         filename
     ))?;
     let file_size = file.metadata()?.len();
-    //This right here, makes sure that the file isnt smaller than the chunk size (25MB)
+    //This right here, makes sure that the file isnt smaller than the chunk size (24MB)
     if file_size <= chunk_size {
         let file_chunk_names = vec![filename.to_string()];
 

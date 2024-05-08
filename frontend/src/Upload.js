@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { AppContext } from "./App";
 
-function FileUploadButton({ setFileInfo }) {
-	const { selectedFile, setSelectedFile } = useContext(AppContext);
+function FileUploadButton() {
+	const { selectedFile, setSelectedFile, setFileInfo } = useContext(AppContext);
 
 	const handleFileChange = (event) => {
 		setSelectedFile(event.target.files[0]);

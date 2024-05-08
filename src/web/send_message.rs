@@ -36,7 +36,7 @@ pub async fn send_message(
     };
     //Initialize file info to send to the split_file_into_chunks function
     let file_name = &payload.file_name;
-    let chunk_size = 25 * 1024 * 1024;
+    let chunk_size = 24 * 1024 * 1024;
     // 10 MB
 
     //Get the chunk filenames from the split_file_into_chunks function
@@ -64,7 +64,7 @@ pub async fn send_message(
             Ok(exists) => exists,
             Err(_) => return Err(uh_oh()),
         };
-        // Make sure that the file doesn't already exist, and that it isn't a file, that is under 25MB
+        // Make sure that the file doesn't already exist, and that it isn't a file, that is under 24MB
         if exists.0 && exists.1 > 1 {
             println!("Chunk file {} already exists", chunk_filename);
             std::fs::remove_file(format!(
@@ -84,7 +84,7 @@ pub async fn send_message(
             continue;
         }
         //Define the path to the file that will be uploaded
-        //And making sure the file isnt a file under 25MB
+        //And making sure the file isnt a file under 24MB
 
         let path = if chunk_filenames.len() == 1 {
             PathBuf::from(format!(
@@ -117,6 +117,7 @@ pub async fn send_message(
             Ok(_) => (),
             Err(_) => return Err(uh_oh()),
         }
+
         //Send the file to discord
         println!("Uploading to discord");
         let res = match client
@@ -125,7 +126,6 @@ pub async fn send_message(
                 get_secret("CHANNEL_ID")
             ))
             .json(&json!({
-
                 "files": [{
                     "filename": chunk_filename,
                     "file_size": bytes.len()
