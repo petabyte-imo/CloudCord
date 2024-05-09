@@ -3,8 +3,6 @@ import { useContext, useState } from "react";
 import { AppContext } from "./App";
 function File(props) {
 	const {
-		isDeleting,
-		setIsDeleting,
 		filePath,
 		setFilePath,
 		encryptionKey,
@@ -14,6 +12,7 @@ function File(props) {
 		encryptionBool,
 	} = useContext(AppContext);
 	const [isDownloading, setIsDownloading] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 	const deleteClick = () => {
 		setIsDeleting(true);
 		fetch(`http://localhost:8080/api/delete/${filePath}`, {

@@ -11,10 +11,7 @@ use axum::{
 
 use crate::States;
 
-use super::{
-    encryption_helper::{decrypt_file, string_to_bytes},
-    file_helper::get_file_from_db,
-};
+use super::file_helper::get_file_from_db;
 
 #[derive(Debug, serde::Deserialize)]
 pub struct DownloadOptions {
@@ -30,17 +27,10 @@ pub async fn download(
     Path(file_path): Path<String>,
     query: Query<DownloadOptions>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
-    let decrypt = |path: &str| {
-        println!("key: {}", state.key.lock().unwrap().as_str());
-        let key = string_to_bytes(state.key.lock().unwrap().as_str());
-        let nonce = [0u8; 12];
-        decrypt_file(&key, &nonce, path)
-    };
-    let encryption = state.encrypted.load(std::sync::atomic::Ordering::Relaxed);
     // Convert to PathBuf
     let file_path = PathBuf::from(file_path.clone());
     // Get the file from the database, using the get_file_from_db function
-    let result = match get_file_from_db(file_path.to_str().unwrap()).await {
+    let result = match get_file_from_db(file_path.to_str().unwrap(), &state).await {
         Ok(result) => result,
         Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
     };
@@ -49,11 +39,7 @@ pub async fn download(
         return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
     // Read the file into a vector of bytes
-    let file_content = if encryption {
-        decrypt(file_path.to_str().unwrap())
-    } else {
-        fs::read(file_path.clone()).unwrap()
-    };
+    let file_content = fs::read(file_path.clone()).unwrap();
     // Get the content type, using the file_format crate
     let content_type = file_format::FileFormat::from_bytes(file_content.clone());
     // Default to application/octet-stream

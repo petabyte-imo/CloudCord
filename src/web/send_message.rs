@@ -36,8 +36,8 @@ pub async fn send_message(
     };
     //Initialize file info to send to the split_file_into_chunks function
     let file_name = &payload.file_name;
-    let chunk_size = 24 * 1024 * 1024;
-    // 10 MB
+    let chunk_size = 20 * 1024 * 1024;
+    // 20 MB
 
     //Get the chunk filenames from the split_file_into_chunks function
     let chunk_filenames = match split_file_into_chunks(file_name.as_str(), chunk_size) {

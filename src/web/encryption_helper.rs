@@ -29,11 +29,9 @@ pub fn encrypt_file(key: &[u8], nonce: &[u8], filename: &str) -> Vec<u8> {
     let nonce = Nonce::from_slice(nonce); // 96-bits; unique per message
     cipher.encrypt(nonce, plaintext).unwrap()
 }
-pub fn decrypt_file(key: &[u8], nonce: &[u8], filename: &str) -> Vec<u8> {
-    println!("Decrypting file: {}", filename);
-    let filecontents = std::fs::read(filename).unwrap();
 
-    let plaintext = read_file(&filecontents);
+pub fn decrypt_bytes(key: &[u8], nonce: &[u8], bytes: Vec<u8>) -> Vec<u8> {
+    let plaintext = bytes.as_slice();
     let cipher = ChaCha20Poly1305::new_from_slice(key).unwrap();
     let nonce = Nonce::from_slice(nonce); // 96-bits; unique per message
 

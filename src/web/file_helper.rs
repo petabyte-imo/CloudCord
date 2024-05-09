@@ -1,9 +1,24 @@
 use std::{env::current_dir, fs::File, io::Write};
 
+use axum::Extension;
+
+use crate::{
+    web::encryption_helper::{decrypt_bytes, string_to_bytes},
+    States,
+};
+
 use super::{db::upload::UploadDatabase, filefunctions::reassemble_file_from_chunks};
 
 // Gets file from the database
-pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
+pub async fn get_file_from_db(
+    file_name: &str,
+    state: &Extension<States>,
+) -> Result<String, String> {
+    let decrypt = |bytes| {
+        let key = string_to_bytes(state.key.lock().unwrap().as_str());
+        let nonce = [0u8; 12];
+        decrypt_bytes(&key, &nonce, bytes)
+    };
     //Initialize the database
     let db = match UploadDatabase::new().await {
         Ok(db) => db,
@@ -30,13 +45,19 @@ pub async fn get_file_from_db(file_name: &str) -> Result<String, String> {
             Ok(res_json) => res_json,
             Err(_) => return Err("5321".to_string()),
         };
+        let bytes = if state.encrypted.load(std::sync::atomic::Ordering::Relaxed) {
+            decrypt(res_bytes.to_vec())
+        } else {
+            res_bytes.to_vec()
+        };
+
         let mut file = File::create(format!(
             "{}/{}",
             current_dir().unwrap().display(),
             file.chunk_filename
         ))
         .unwrap();
-        file.write_all(&res_bytes).unwrap();
+        file.write_all(&bytes).unwrap();
     }
 
     //This will reassemble the file from chunk, only if its multiple chunks
